@@ -1,0 +1,102 @@
+Hier ist die Lösung zum Scaling bei Hover:
+
+let img;
+let img2;
+
+function preload() {
+  img = loadImage('image.png');
+  img2 = loadImage('image2.jpg');
+}
+
+function setup() {
+  createCanvas(600, 800);
+  noSmooth();
+}
+
+function draw() {
+  background(50);
+
+  let w1 = map(mouseX, 0, width, 50, img.width * 2);
+  let h1 = map(mouseY, 0, height/2, 50, img.height * 2);
+  let w2 = map(mouseX, 0, width, 50, img2.width * 2);
+  let h2 = map(mouseY, 0, height/2, 50, img2.height * 2);
+
+  image(img, 0, 0, w1, h1);
+  image(img2, 0, height/2, w2, h2);
+}
+
+function keyPressed() {
+  if (key === '1') applyInvert(img);  
+  if (key === '2') applyInvert(img2); 
+  if (key === 'H') sortHue(img);      
+  if (key === 'h') sortHue(img2);     
+}
+
+function applyInvert(imageObj) {
+  imageObj.loadPixels();
+  for (let i = 0; i < imageObj.pixels.length; i += 4) {
+    imageObj.pixels[i + 0] = 255 - imageObj.pixels[i + 0];       
+    imageObj.pixels[i + 1] = 255 - imageObj.pixels[i + 1];   
+    imageObj.pixels[i + 2] = 255 - imageObj.pixels[i + 2];   
+  }
+  imageObj.updatePixels();
+}
+
+
+********* Filter funktioniert noch gar nicht.
+
+
+
+Combined Image Lösung:
+
+let img;
+let img2;
+let combined;
+
+function preload() {
+  img = loadImage('image.png');   
+  img2 = loadImage('image2.jpg'); 
+}
+
+function setup() {
+  createCanvas(600, 400);
+  noSmooth();
+
+  img.resize(600, 400);
+  img2.resize(600, 400);
+
+  combined = createImage(img.width, img.height);
+
+  combined.loadPixels();
+  img.loadPixels();
+  img2.loadPixels();
+
+  for (let i = 0; i < combined.pixels.length; i += 4) {
+    if ((i / 4) % 2 === 0) {
+      // gerade Pixel von img2
+      combined.pixels[i + 0] = img2.pixels[i + 0];
+      combined.pixels[i + 1] = img2.pixels[i + 1];
+      combined.pixels[i + 2] = img2.pixels[i + 2];
+      combined.pixels[i + 3] = img2.pixels[i + 3];
+    } else {
+      // ungerade Pixel von img
+      combined.pixels[i + 0] = img.pixels[i + 0];
+      combined.pixels[i + 1] = img.pixels[i + 1];
+      combined.pixels[i + 2] = img.pixels[i + 2];
+      combined.pixels[i + 3] = img.pixels[i + 3];
+    }
+  }
+
+  combined.updatePixels();
+}
+
+function draw() {
+  background(50);
+  image(combined, 0, 0, width, height);
+}
+
+
+
+
+
+
